@@ -37,8 +37,8 @@ class ROM(object):
         # ensure the first 4 bytes are 0x4E45531A (NES<EOF>)
         if not np.array_equal(self._magic, self._MAGIC):
             raise ValueError('ROM missing magic number in header.')
-        if self._zero_fill != 0:
-            raise ValueError("ROM header zero fill bytes are not zero.")
+        # if self._zero_fill != 0:
+        #     raise ValueError("ROM header zero fill bytes are not zero.")
 
     #
     # MARK: Header
@@ -195,7 +195,7 @@ class ROM(object):
     @property
     def prg_rom_stop(self):
         """The exclusive stopping index of the PRG ROM."""
-        return self.prg_rom_start + self.prg_rom_size * 2**10
+        return self.prg_rom_start + int(self.prg_rom_size) * 2**10
 
     @property
     def prg_rom(self):
@@ -213,7 +213,7 @@ class ROM(object):
     @property
     def chr_rom_stop(self):
         """The exclusive stopping index of the CHR ROM."""
-        return self.chr_rom_start + self.chr_rom_size * 2**10
+        return self.chr_rom_start + int(self.chr_rom_size) * 2**10
 
     @property
     def chr_rom(self):
