@@ -9,6 +9,16 @@
 #include "log.hpp"
 
 namespace NES {
+void MainBus::save_state(StateWriter& w) const {
+    w.write_block(ram.data(), ram.size());
+    w.write_block(extended_ram.data(), extended_ram.size());
+}
+
+void MainBus::load_state(StateReader& r) {
+    r.read_block(ram.data(), ram.size());
+    r.read_block(extended_ram.data(), extended_ram.size());
+    r.skip_remainder();
+}
 
 NES_Byte MainBus::read(NES_Address address) {
     if (address < 0x2000) {

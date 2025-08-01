@@ -81,6 +81,14 @@ extern "C" {
     EXP void Close(NES::Emulator* emu) {
         delete emu;
     }
+
+    EXP bool LoadState(NES::Emulator* emu, const std::string& path) {
+        return emu->load_state(path);
+    }
+
+    EXP void SaveState(NES::Emulator* emu, const std::string& path) {
+        emu->save_state(path);
+    }
 }
 
 // un-define the macro

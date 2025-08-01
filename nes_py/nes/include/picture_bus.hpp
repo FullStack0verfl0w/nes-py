@@ -12,11 +12,12 @@
 #include <cstdlib>
 #include "common.hpp"
 #include "mapper.hpp"
+#include "state_serializable.hpp"
 
 namespace NES {
 
 /// The bus for graphical data to travel along
-class PictureBus {
+class PictureBus: public IStateSerializable {
  private:
     /// the VRAM on the picture bus
     std::vector<NES_Byte> ram;
@@ -28,6 +29,11 @@ class PictureBus {
     Mapper* mapper;
 
  public:
+
+    std::string chunk_id() const override { return "PBS "; }
+    void     save_state(StateWriter&) const override;
+    void     load_state(StateReader&)       override;
+
     /// Initialize a new picture bus.
     PictureBus() : ram(0x800), palette(0x20), mapper(nullptr) { }
 

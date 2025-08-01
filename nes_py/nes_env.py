@@ -55,6 +55,11 @@ _LIB.Backup.restype = None
 # setup the argument and return types for Restore
 _LIB.Restore.argtypes = [ctypes.c_void_p]
 _LIB.Restore.restype = None
+
+_LIB.LoadState.argtypes = [ctypes.c_void_p, ctypes.c_char_p]
+_LIB.LoadState.restype = ctypes.c_bool
+_LIB.SaveState.argtypes = [ctypes.c_void_p, ctypes.c_char_p]
+_LIB.SaveState.restype = None
 # setup the argument and return types for Close
 _LIB.Close.argtypes = [ctypes.c_void_p]
 _LIB.Close.restype = None
@@ -209,6 +214,12 @@ class NESEnv(gym.Env):
         self.controllers[0][:] = action
         # perform a step on the emulator
         _LIB.Step(self._env)
+
+    def load_state(self, path: bytes):
+        return _LIB.LoadState(self._env, path)
+
+    def save_state(self, path: bytes):
+        return _LIB.SaveState(self._env, path)
 
     def _backup(self):
         """Backup the NES state in the emulator."""

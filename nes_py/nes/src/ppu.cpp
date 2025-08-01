@@ -12,6 +12,58 @@
 
 namespace NES {
 
+void PPU::save_state(StateWriter& w) const {
+    w.write_block(sprite_memory.data(), sprite_memory.size());
+    w.write_block(scanline_sprites.data(), scanline_sprites.size());
+    w.write(pipeline_state);
+    w.write(cycles);
+    w.write(scanline);
+    w.write(is_even_frame);
+    w.write(is_vblank);
+    w.write(is_sprite_zero_hit);
+    w.write(data_address);
+    w.write(temp_address);
+    w.write(fine_x_scroll);
+    w.write(is_first_write);
+    w.write(data_buffer);
+    w.write(sprite_data_address);
+    w.write(is_showing_sprites);
+    w.write(is_showing_background);
+    w.write(is_hiding_edge_sprites);
+    w.write(is_hiding_edge_background);
+    w.write(is_long_sprites);
+    w.write(is_interrupting);
+    w.write(background_page);
+    w.write(sprite_page);
+    w.write(data_address_increment);
+}
+void PPU::load_state(StateReader& r) {
+    r.read_block(sprite_memory.data(), sprite_memory.size());
+    r.read_block(scanline_sprites.data(), scanline_sprites.size());
+    r.read(pipeline_state);
+    r.read(cycles);
+    r.read(scanline);
+    r.read(is_even_frame);
+    r.read(is_vblank);
+    r.read(is_sprite_zero_hit);
+    r.read(data_address);
+    r.read(temp_address);
+    r.read(fine_x_scroll);
+    r.read(is_first_write);
+    r.read(data_buffer);
+    r.read(sprite_data_address);
+    r.read(is_showing_sprites);
+    r.read(is_showing_background);
+    r.read(is_hiding_edge_sprites);
+    r.read(is_hiding_edge_background);
+    r.read(is_long_sprites);
+    r.read(is_interrupting);
+    r.read(background_page);
+    r.read(sprite_page);
+    r.read(data_address_increment);
+    r.skip_remainder();
+}
+
 void PPU::reset() {
     is_long_sprites = false;
     is_interrupting = false;

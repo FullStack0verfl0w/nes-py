@@ -10,6 +10,29 @@
 
 namespace NES {
 
+void CPU::save_state(StateWriter& w) const {
+    w.write(register_PC);
+    w.write(register_SP);
+    w.write(register_A);
+    w.write(register_X);
+    w.write(register_Y);
+    w.write(flags);
+    w.write(skip_cycles);
+    w.write(cycles);
+}
+
+void CPU::load_state(StateReader& r) {
+    r.read(register_PC);
+    r.read(register_SP);
+    r.read(register_A);
+    r.read(register_X);
+    r.read(register_Y);
+    r.read(flags);
+    r.read(skip_cycles);
+    r.read(cycles);
+    r.skip_remainder();
+}
+
 bool CPU::implied(MainBus &bus, NES_Byte opcode) {
     switch (static_cast<OperationImplied>(opcode)) {
         case BRK: {

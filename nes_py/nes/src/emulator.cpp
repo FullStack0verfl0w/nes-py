@@ -8,8 +8,64 @@
 #include "emulator.hpp"
 #include "mapper_factory.hpp"
 #include "log.hpp"
+#include "state.hpp"
+
+#include <fstream>
+#include <stdexcept>
 
 namespace NES {
+
+
+void Emulator::save_state(const std::string& filename) const {
+    std::ofstream file(filename, std::ios::binary);
+    if (!file)
+        throw std::runtime_error("Emulator::save_state: cannot open '" + filename + "' for writing");
+
+    file.write("NSP\1", 4);                    // magic + version
+    StateWriter w(file);
+
+    for (auto* dev : serializables) {
+        const std::string id = dev->chunk_id();
+
+        LOG(Info) << "------------------------------------" << std::endl;
+        LOG(Info) << "[save_state] writing chunk "
+                  << id << '\n';
+
+        w.begin(id);
+        dev->save_state(w);
+        w.end();
+    }
+}
+
+bool Emulator::load_state(const std::string& filename) {
+    std::ifstream file(filename, std::ios::binary);
+    if (!file)
+        throw std::runtime_error("Emulator::load_state: cannot open '" + filename + "' for reading");
+
+    char hdr[4]; if (!file.read(hdr, 4) || std::memcmp(hdr, "NSP\1", 4)) return false;
+    StateReader r(file);
+
+    std::string id;
+    uint32_t len;
+    while (r.next(id,len)) {
+
+        bool handled = false;
+        for (auto* dev : serializables) {
+            if ( dev->chunk_id() == id) {
+                LOG(Info) << "------------------------------------" << std::endl;
+                LOG(Info) << "[load_state] loading chunk " << id << '\n';
+                dev->load_state(r);
+                handled = true;
+                break;
+            }
+        }
+        if (!handled) {
+            LOG(Info) << "[load_state] skipping chunk " << id << '\n';
+            r.skip_remainder();
+        }
+    }
+    return true;
+}
 
 Emulator::Emulator(std::string rom_path) {
     // set the read callbacks

@@ -47,11 +47,17 @@ class Emulator {
     /// the emulators' PPU
     PPU backup_ppu;
 
+    std::array<IStateSerializable*, 4> serializables{
+        &cpu, &bus, &ppu, &picture_bus
+    };
  public:
     /// The width of the NES screen in pixels
     static const int WIDTH = SCANLINE_VISIBLE_DOTS;
     /// The height of the NES screen in pixels
     static const int HEIGHT = VISIBLE_SCANLINES;
+
+    void save_state(const std::string& filename) const;
+    bool load_state(const std::string& filename);
 
     /// Initialize a new emulator with a path to a ROM file.
     ///

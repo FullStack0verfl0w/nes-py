@@ -11,11 +11,12 @@
 #include "common.hpp"
 #include "cpu_opcodes.hpp"
 #include "main_bus.hpp"
+#include "state_serializable.hpp"
 
 namespace NES {
 
 /// The MOS6502 CPU for the Nintendo Entertainment System (NES)
-class CPU {
+class CPU: public IStateSerializable {
  private:
     /// The program counter register
     NES_Address register_PC;
@@ -127,6 +128,11 @@ class CPU {
     void reset(NES_Address start_address);
 
  public:
+
+    std::string chunk_id() const override { return "CPU "; }
+    void     save_state(StateWriter&) const override;
+    void     load_state(StateReader&)       override;
+
     /// The interrupt types available to this CPU
     enum InterruptType {
         IRQ_INTERRUPT,

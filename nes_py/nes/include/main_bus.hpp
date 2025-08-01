@@ -12,6 +12,7 @@
 #include <unordered_map>
 #include "common.hpp"
 #include "mapper.hpp"
+#include "state_serializable.hpp"
 
 namespace NES {
 
@@ -47,7 +48,7 @@ typedef std::function<NES_Byte(void)> ReadCallback;
 typedef std::unordered_map<IORegisters, ReadCallback, EnumClassHash> IORegisterToReadCallbackMap;
 
 /// The main bus for data to travel along the NES hardware
-class MainBus {
+class MainBus: public IStateSerializable {
  private:
     /// The RAM on the main bus
     std::vector<NES_Byte> ram;
@@ -61,6 +62,11 @@ class MainBus {
     IORegisterToReadCallbackMap read_callbacks;
 
  public:
+
+    std::string chunk_id() const override { return "MBS "; }
+    void     save_state(StateWriter&) const override;
+    void     load_state(StateReader&)       override;
+
     /// Initialize a new main bus.
     MainBus() : ram(0x800, 0), mapper(nullptr) { }
 

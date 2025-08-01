@@ -10,6 +10,19 @@
 
 namespace NES {
 
+void PictureBus::save_state(StateWriter& w) const {
+    w.write_block(ram.data(), ram.size());
+    w.write_block(palette.data(), palette.size());
+    w.write(name_tables);
+}
+
+void PictureBus::load_state(StateReader& r) {
+    r.read_block(ram.data(), ram.size());
+    r.read_block(palette.data(), palette.size());
+    r.read(name_tables);
+    r.skip_remainder();
+}
+
 NES_Byte PictureBus::read(NES_Address address) {
     if (address < 0x2000) {
         return mapper->readCHR(address);

@@ -10,6 +10,7 @@
 
 #include "common.hpp"
 #include "picture_bus.hpp"
+#include "state_serializable.hpp"
 
 namespace NES {
 
@@ -25,7 +26,7 @@ const int SCANLINE_END_CYCLE = 341;
 const int FRAME_END_SCANLINE = 261;
 
 /// The Picture Processing Unit (PPU) for the NES
-class PPU {
+class PPU: public IStateSerializable {
  private:
     /// The callback to fire when entering vertical blanking mode
     std::function<void(void)> vblank_callback;
@@ -104,6 +105,11 @@ class PPU {
     NES_Pixel screen[VISIBLE_SCANLINES][SCANLINE_VISIBLE_DOTS];
 
  public:
+
+    std::string chunk_id() const override { return "PPU "; }
+    void     save_state(StateWriter&) const override;
+    void     load_state(StateReader&)       override;
+
     /// Initialize a new PPU.
     PPU() : sprite_memory(64 * 4) { }
 
