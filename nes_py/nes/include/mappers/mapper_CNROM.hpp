@@ -21,6 +21,10 @@ class MapperCNROM : public Mapper {
     NES_Address select_chr;
 
  public:
+    std::string chunk_id() const override { return "MCN "; }
+    void     save_state(StateWriter&) const override;
+    void     load_state(StateReader&)       override;
+
     /// Create a new mapper with a cartridge.
     ///
     /// @param cart a reference to a cartridge for the mapper to access

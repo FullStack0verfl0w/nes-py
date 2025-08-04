@@ -24,7 +24,18 @@ void Emulator::save_state(const std::string& filename) const {
     file.write("NSP\1", 4);                    // magic + version
     StateWriter w(file);
 
-    for (auto* dev : serializables) {
+
+    const std::string id = mapper->chunk_id();
+
+    LOG(Info) << "------------------------------------" << std::endl;
+    LOG(Info) << "[save_state] writing chunk "
+              << id << '\n';
+
+    w.begin(id);
+    mapper->save_state(w);
+    w.end();
+
+    for (auto dev : serializables) {
         const std::string id = dev->chunk_id();
 
         LOG(Info) << "------------------------------------" << std::endl;
@@ -48,15 +59,26 @@ bool Emulator::load_state(const std::string& filename) {
     std::string id;
     uint32_t len;
     while (r.next(id,len)) {
+        auto mapper_id = mapper->chunk_id();
 
         bool handled = false;
-        for (auto* dev : serializables) {
-            if ( dev->chunk_id() == id) {
-                LOG(Info) << "------------------------------------" << std::endl;
-                LOG(Info) << "[load_state] loading chunk " << id << '\n';
-                dev->load_state(r);
-                handled = true;
-                break;
+
+        if ( mapper_id == id) {
+            LOG(Info) << "------------------------------------" << std::endl;
+            LOG(Info) << "[load_state] loading chunk " << id << '\n';
+            mapper->load_state(r);
+            handled = true;
+        }
+
+        if (!handled) {
+            for (auto *dev: serializables) {
+                if (dev->chunk_id() == id) {
+                    LOG(Info) << "------------------------------------" << std::endl;
+                    LOG(Info) << "[load_state] loading chunk " << id << '\n';
+                    dev->load_state(r);
+                    handled = true;
+                    break;
+                }
             }
         }
         if (!handled) {
@@ -89,7 +111,7 @@ Emulator::Emulator(std::string rom_path) {
     // load the ROM from disk, expect that the Python code has validated it
     cartridge.loadFromFile(rom_path);
     // create the mapper based on the mapper ID in the iNES header of the ROM
-    auto mapper = MapperFactory(&cartridge, [&](){ picture_bus.update_mirroring(); });
+    mapper = MapperFactory(&cartridge, [&](){ picture_bus.update_mirroring(); });
     // give the IO buses a pointer to the mapper
     bus.set_mapper(mapper);
     picture_bus.set_mapper(mapper);

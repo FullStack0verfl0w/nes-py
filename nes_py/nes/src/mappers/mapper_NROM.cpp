@@ -10,6 +10,14 @@
 
 namespace NES {
 
+void MapperNROM::save_state(StateWriter &w) const {
+    w.write_block(character_ram.data(), character_ram.size());
+}
+void MapperNROM::load_state(StateReader &r) {
+    r.read_block(character_ram.data(), character_ram.size());
+    r.skip_remainder();
+}
+
 MapperNROM::MapperNROM(Cartridge* cart) :
     Mapper(cart),
     is_one_bank(cart->getROM().size() == 0x4000),

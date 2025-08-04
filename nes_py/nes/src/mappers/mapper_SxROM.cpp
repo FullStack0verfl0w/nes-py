@@ -10,6 +10,34 @@
 
 namespace NES {
 
+void MapperSxROM::save_state(StateWriter &w) const {
+    w.write(mode_chr);
+    w.write(mode_prg);
+    w.write(temp_register);
+    w.write(write_counter);
+    w.write(register_prg);
+    w.write(register_chr0);
+    w.write(register_chr1);
+    w.write(first_bank_prg);
+    w.write(second_bank_prg);
+    w.write(first_bank_chr);
+    w.write(second_bank_chr);
+}
+void MapperSxROM::load_state(StateReader &r) {
+    r.read(mode_chr);
+    r.read(mode_prg);
+    r.read(temp_register);
+    r.read(write_counter);
+    r.read(register_prg);
+    r.read(register_chr0);
+    r.read(register_chr1);
+    r.read(first_bank_prg);
+    r.read(second_bank_prg);
+    r.read(first_bank_chr);
+    r.read(second_bank_chr);
+    r.skip_remainder();
+}
+
 MapperSxROM::MapperSxROM(Cartridge* cart, std::function<void(void)> mirroring_cb) :
     Mapper(cart),
     mirroring_callback(mirroring_cb),

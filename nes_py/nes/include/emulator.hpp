@@ -26,6 +26,8 @@ class Emulator {
     static const int CYCLES_PER_FRAME = 29781;
     /// the virtual cartridge with ROM and mapper data
     Cartridge cartridge;
+    Mapper* mapper;
+
     /// the 2 controllers on the emulator
     Controller controllers[2];
 

@@ -10,6 +10,19 @@
 
 namespace NES {
 
+void MapperUxROM::save_state(StateWriter &w) const {
+    w.write(last_bank_pointer);
+    w.write(select_prg);
+    w.write_block(character_ram.data(), character_ram.size());
+}
+
+void MapperUxROM::load_state(StateReader &r) {
+    r.read(last_bank_pointer);
+    r.read(select_prg);
+    r.read_block(character_ram.data(), character_ram.size());
+    r.skip_remainder();
+}
+
 MapperUxROM::MapperUxROM(Cartridge* cart) :
     Mapper(cart),
     has_character_ram(cart->getVROM().size() == 0),

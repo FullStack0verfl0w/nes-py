@@ -26,6 +26,10 @@ class MapperUxROM : public Mapper {
     std::vector<NES_Byte> character_ram;
 
  public:
+    std::string chunk_id() const override { return "MUX "; }
+    void     save_state(StateWriter&) const override;
+    void     load_state(StateReader&)       override;
+
     /// Create a new mapper with a cartridge.
     ///
     /// @param cart a reference to a cartridge for the mapper to access

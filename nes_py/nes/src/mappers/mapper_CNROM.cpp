@@ -10,6 +10,14 @@
 
 namespace NES {
 
+void MapperCNROM::save_state(StateWriter& w) const {
+    w.write(select_chr);
+}
+void MapperCNROM::load_state(StateReader& r) {
+    r.read(select_chr);
+    r.skip_remainder();
+}
+
 void MapperCNROM::writeCHR(NES_Address address, NES_Byte value) {
     LOG(Info) <<
         "Read-only CHR memory write attempt at " <<

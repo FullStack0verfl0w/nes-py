@@ -11,6 +11,7 @@
 #include <functional>
 #include "common.hpp"
 #include "cartridge.hpp"
+#include "state_serializable.hpp"
 
 namespace NES {
 
@@ -24,12 +25,16 @@ enum NameTableMirroring {
 };
 
 /// An abstraction of a general hardware mapper for different NES cartridges
-class Mapper {
+class Mapper: public IStateSerializable {
  protected:
     /// The cartridge this mapper associates with
     Cartridge* cartridge;
 
  public:
+    virtual std::string chunk_id() const override = 0;
+    virtual void save_state(StateWriter&) const override = 0;
+    virtual void load_state(StateReader&)       override = 0;
+
     /// Create a new mapper with a cartridge and given type.
     ///
     /// @param game a reference to a cartridge for the mapper to access
