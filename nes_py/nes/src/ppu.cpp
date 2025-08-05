@@ -38,8 +38,8 @@ void PPU::save_state(StateWriter& w) const {
     w.write(data_address_increment);
 }
 void PPU::load_state(StateReader& r) {
-    r.read_block(sprite_memory.data(), sprite_memory.size());
-    r.read_block(scanline_sprites.data(), scanline_sprites.size());
+    r.read_block(sprite_memory);
+    r.read_block(scanline_sprites);
     r.read(pipeline_state);
     r.read(cycles);
     r.read(scanline);

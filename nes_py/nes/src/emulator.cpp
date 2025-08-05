@@ -5,6 +5,7 @@
 //  Copyright (c) 2019 Christian Kauten. All rights reserved.
 //
 
+#include "cstring"
 #include "emulator.hpp"
 #include "mapper_factory.hpp"
 #include "log.hpp"
@@ -16,7 +17,7 @@
 namespace NES {
 
 
-void Emulator::save_state(const std::string& filename) const {
+void Emulator::save_state(std::string filename) const {
     std::ofstream file(filename, std::ios::binary);
     if (!file)
         throw std::runtime_error("Emulator::save_state: cannot open '" + filename + "' for writing");
@@ -48,7 +49,7 @@ void Emulator::save_state(const std::string& filename) const {
     }
 }
 
-bool Emulator::load_state(const std::string& filename) {
+bool Emulator::load_state(std::string filename) {
     std::ifstream file(filename, std::ios::binary);
     if (!file)
         throw std::runtime_error("Emulator::load_state: cannot open '" + filename + "' for reading");

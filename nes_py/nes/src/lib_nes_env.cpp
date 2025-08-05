@@ -21,6 +21,13 @@
     #define EXP
 #endif
 
+std::string wchar_to_string(wchar_t* path) {
+    std::wstring ws_rom_path(path);
+    std::string rom_path(ws_rom_path.begin(), ws_rom_path.end());
+    return rom_path;
+}
+
+
 // definitions of functions for the Python interface to access
 extern "C" {
     /// Return the width of the NES.
@@ -36,8 +43,7 @@ extern "C" {
     /// Initialize a new emulator and return a pointer to it
     EXP NES::Emulator* Initialize(wchar_t* path) {
         // convert the c string to a c++ std string data structure
-        std::wstring ws_rom_path(path);
-        std::string rom_path(ws_rom_path.begin(), ws_rom_path.end());
+        auto rom_path = wchar_to_string(path);
         // create a new emulator with the given ROM path
         return new NES::Emulator(rom_path);
     }
@@ -82,12 +88,12 @@ extern "C" {
         delete emu;
     }
 
-    EXP bool LoadState(NES::Emulator* emu, const std::string& path) {
-        return emu->load_state(path);
+    EXP bool LoadState(NES::Emulator* emu, wchar_t* path) {
+        return emu->load_state(wchar_to_string(path));
     }
 
-    EXP void SaveState(NES::Emulator* emu, const std::string& path) {
-        emu->save_state(path);
+    EXP void SaveState(NES::Emulator* emu, wchar_t* path) {
+        emu->save_state(wchar_to_string(path));
     }
 }
 

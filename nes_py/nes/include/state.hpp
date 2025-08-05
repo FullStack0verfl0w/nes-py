@@ -30,10 +30,14 @@ public:
         LOG(Info) << "Writing " << size << " bytes" << std::endl;
         out_.write(reinterpret_cast<const char*>(&v), size);
     }
+
     void write_block(const void* p, size_t n) {
-        LOG(Info) << "Writing block of " << n << " bytes" << std::endl;
-        out_.write(reinterpret_cast<const char*>(p), n);
+        const uint32_t len = static_cast<uint32_t>(n);
+        LOG(Info) << "Writing block of " << len << " bytes" << std::endl;
+        put_u32(len); // write length just before the block
+        out_.write(reinterpret_cast<const char*>(p), len);
     }
+
 
     void end() {
         const std::streampos here = out_.tellp();
@@ -68,10 +72,30 @@ public:
         LOG(Info) << "Reading " << size << " bytes" << std::endl;
         in_.read(reinterpret_cast<char*>(&v), size); remaining_.top() -= size;
     }
-    void read_block(void* p, size_t n) {
-        LOG(Info) << "Reading block of " << n << " bytes" << std::endl;
-        in_.read(reinterpret_cast<char*>(p), n); remaining_.top() -= n;
+
+    void read_block(std::vector<uint8_t>& buf) {
+        const uint32_t len = get_u32(); // <block-len>
+        if (remaining_.empty() || remaining_.top() < sizeof(uint32_t) + len)
+            throw std::runtime_error("read_block: truncated or corrupt block");
+
+        LOG(Info) << "Reading block of " << len << " bytes into vector" << std::endl;
+        buf.resize(len);
+        if (len) in_.read(reinterpret_cast<char*>(buf.data()), len);
+        remaining_.top() -= (sizeof(uint32_t) + len);
     }
+
+    void read_block(void* p, size_t n) {
+        const uint32_t len = get_u32(); // read the stored length
+        LOG(Info) << "Reading block of " << len << " bytes" << std::endl;
+
+        if (len > n) {
+            throw std::runtime_error("read_block: destination buffer too small");
+        }
+
+        in_.read(reinterpret_cast<char*>(p), len);
+        remaining_.top() -= (sizeof(uint32_t) + len);
+    }
+
 
     void skip_remainder() { in_.seekg(remaining_.top(), std::ios::cur); remaining_.pop(); }
 };

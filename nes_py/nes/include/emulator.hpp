@@ -9,6 +9,7 @@
 #define EMULATOR_HPP
 
 #include <string>
+#include <array>
 #include "common.hpp"
 #include "cartridge.hpp"
 #include "controller.hpp"
@@ -58,8 +59,8 @@ class Emulator {
     /// The height of the NES screen in pixels
     static const int HEIGHT = VISIBLE_SCANLINES;
 
-    void save_state(const std::string& filename) const;
-    bool load_state(const std::string& filename);
+    void save_state(std::string filename) const;
+    bool load_state(std::string filename);
 
     /// Initialize a new emulator with a path to a ROM file.
     ///

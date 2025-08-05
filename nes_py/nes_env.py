@@ -56,9 +56,9 @@ _LIB.Backup.restype = None
 _LIB.Restore.argtypes = [ctypes.c_void_p]
 _LIB.Restore.restype = None
 
-_LIB.LoadState.argtypes = [ctypes.c_void_p, ctypes.c_char_p]
+_LIB.LoadState.argtypes = [ctypes.c_void_p, ctypes.c_wchar_p]
 _LIB.LoadState.restype = ctypes.c_bool
-_LIB.SaveState.argtypes = [ctypes.c_void_p, ctypes.c_char_p]
+_LIB.SaveState.argtypes = [ctypes.c_void_p, ctypes.c_wchar_p]
 _LIB.SaveState.restype = None
 # setup the argument and return types for Close
 _LIB.Close.argtypes = [ctypes.c_void_p]
@@ -215,10 +215,10 @@ class NESEnv(gym.Env):
         # perform a step on the emulator
         _LIB.Step(self._env)
 
-    def load_state(self, path: bytes):
+    def load_state(self, path: str):
         return _LIB.LoadState(self._env, path)
 
-    def save_state(self, path: bytes):
+    def save_state(self, path: str):
         return _LIB.SaveState(self._env, path)
 
     def _backup(self):
